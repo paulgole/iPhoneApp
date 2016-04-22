@@ -11,6 +11,7 @@
 			padding: 0px;
 			background-color: #fff;
 			overflow: hidden;
+			width: 100%;
 		}
 
 		#myCanvas {
@@ -18,6 +19,7 @@
 			left: 0px;
 			top: 0px;
 			background-color: #fff;
+			width: 100%;
 		}
 	</style>
 
@@ -34,11 +36,20 @@
 			var resize;
 			var orientation;
 
-			makeCanvas();
+			//makeCanvas();
+			var canvas = document.getElementById('myCanvas');
+			canvas.setAttribute('width', window.innerWidth);
+			canvas.setAttribute('height', window.innerHeight);
+			var stage = new createjs.Stage('myCanvas');
+			createjs.Touch.enable(stage, true); // Enables single touch interaction
+			var stageW = stage.canvas.width;
+			var stageH = stage.canvas.height;
 
-			var stage = new createjs.Stage("myCanvas");
+
+
+			// var stage = new createjs.Stage("myCanvas");
 			//stage.enableMouseOver(10); // leave out if mobile
-			createjs.Touch.enable(stage, true);
+			// createjs.Touch.enable(stage, true);
 
 			var queue = new createjs.LoadQueue(false);
 
@@ -101,10 +112,10 @@
 				/////////////  Timer  /////////////////
 
 				var timeCounter = 30;
-				var timeCount = setInterval(function () {
+				var timeCount = setInterval(function() {
 					timeCounter--;
 					timer.text = timeCounter;
-					if(timeCounter == 0){
+					if (timeCounter == 0) {
 						clearInterval(timeCount);
 					}
 					stage.update();
@@ -172,8 +183,7 @@
 				colorTray.addChild(colorText);
 				colorText.x = stageW / 2;
 				colorText.y = colorTray.height / 2;
-
-				colorTray.y = stageH * .7;
+				colorTray.y = circle.y + stageH / 2 - stageH / 6;
 
 				/////////////  MouseDown Event Listener  /////////////////
 
@@ -195,25 +205,6 @@
 
 					stage.update();
 				});
-
-
-
-				/////////////  Shuffle  /////////////////
-
-				//this can be placed into your module- or should be
-				function shuffle(array) {
-					if (array == null) return;
-					var i = array.length,
-						j, temp;
-					if (i == 0) return array;
-					while (--i) {
-						j = Math.floor(Math.random() * (i + 1));
-						temp = array[i];
-						array[i] = array[j];
-						array[j] = temp;
-					}
-					return array;
-				}
 
 				stage.update();
 			}
@@ -287,6 +278,7 @@
 </head>
 
 <body>
+	<canvas id="myCanvas"></canvas>
 
 </body>
 

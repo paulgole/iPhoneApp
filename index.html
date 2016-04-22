@@ -73,9 +73,9 @@
 
 			function init() {
 				var row = 7;
-				var radius = stageW / 25;
+				var radius = stageW / 30;
 				var size = radius * 2;
-				var spacing = stageH * .03;
+				var spacing = stageH * .04;
 				var counter = 0;
 
 				var cols = 6;
@@ -88,15 +88,16 @@
 				circles.y = stageH / 4;
 				circles.x = stageW / 6;
 
-				createCircles();
 
 				var colors = ['#FFF361', '#4A90E2', '#CA8EFF', '#FF596D', '#B8E986', '#FFAC8D'];
 				var randomNum = Math.floor(Math.random() * colors.length);
 
+				createCircles();
+				colorSection(colors, randomNum);
+
 				/////////////  Create Dots  /////////////////
 
 				function createCircles() {
-
 					for (var i = 0; i < total; i++) {
 						var colors = ['#FFF361', '#4A90E2', '#CA8EFF', '#FF596D', '#B8E986', '#FFAC8D'];
 						var randomNum = Math.floor(Math.random() * colors.length);
@@ -159,7 +160,7 @@
 				gameTray.addChild(time);
 				gameTray.addChild(timer);
 
-				timer.x = stageW / 4 + 50;
+				timer.x = 7 * stageW / 25;
 				timer.y = gameTray.height / 2;
 
 				time.x = timer.x - stageW / 10;
@@ -168,25 +169,58 @@
 				gameTray.y = 1;
 
 				/////////////  Color TRAY  /////////////////
+				function colorSection(colors, randomNum) {
 
-				var colorTray = new createjs.Container();
-				colorTray.height = stageH * .15;
-				stage.addChild(colorTray);
+					var colorTray = new createjs.Container();
+					colorTray.height = stageH * .15;
+					stage.addChild(colorTray);
 
-				var colorTrayBacking = new createjs.Shape();
-				colorTrayBacking.graphics.dr(0, 0, stageW, colorTray.height);
-				colorTray.addChild(colorTrayBacking);
+					var colorTrayBacking = new createjs.Shape();
+					colorTrayBacking.graphics.dr(0, 0, stageW, colorTray.height);
+					colorTray.addChild(colorTrayBacking);
 
-				var colorText = new createjs.Text("Colour", "bold " + size * .9 + "px Verdana", colors[randomNum]);
-				colorText.textAlign = "center";
-				colorText.textBaseline = "middle";
-				colorTray.addChild(colorText);
-				colorText.x = stageW / 2;
-				colorText.y = colorTray.height / 2;
-				colorTray.y = circle.y + stageH / 2 - stageH / 6;
+					if (colors[randomNum] == "#FFF361") {
+						var colorText = new createjs.Text("Yellow", "bold " + size * 0.9 + "px Verdana", "#FFF361");
+					}
+					if (colors[randomNum] == "#4A90E2") {
+						var colorText = new createjs.Text("Blue", "bold " + size * 0.9 + "px Verdana", "#4A90E2");
+					}
+					if (colors[randomNum] == "#CA8EFF") {
+						var colorText = new createjs.Text("Purple", "bold " + size * 0.9 + "px Verdana", "#CA8EFF");
+					}
+					if (colors[randomNum] == "#FF596D") {
+						var colorText = new createjs.Text("Red", "bold " + size * 0.9 + "px Verdana", "#FF596D");
+					}
+					if (colors[randomNum] == "#B8E986") {
+						var colorText = new createjs.Text("Green", "bold " + size * 0.9 + "px Verdana", "#B8E986");
+					}
+					if (colors[randomNum] == "#FFAC8D") {
+						var colorText = new createjs.Text("Peach", "bold " + size * 0.9 + "px Verdana", "#FFAC8D");
+					}
+
+					colorText.textAlign = "center";
+					colorText.textBaseline = "middle";
+					colorTray.addChild(colorText);
+					colorText.x = stageW / 2;
+					colorText.y = colorTray.height / 2;
+					colorTray.y = circle.y + stageH / 2 - stageH / 6;
+				}
+
+				var restart = new createjs.Text('Restart', size * .9 + "px arial", "#878787");
+
+				restart.textAlign = "center";
+				restart.textBaseline = "middle";
+
+				restart.x = stageW / 2;
+				restart.y = stageH - stageH/10;
+
+				stage.addChild(restart);
+
+				restart.on('mousedown', function(){
+					restartApp();
+				});
 
 				/////////////  MouseDown Event Listener  /////////////////
-
 				circles.on('mousedown', function(e) {
 					var duration = 250;
 					var thisCircle = e.target;
@@ -199,14 +233,29 @@
 					}, duration, createjs.Ease.sineInOut);
 					setTimeout(function() {
 						circles.removeChild(thisCircle);
+						recreateCircles(thisCircle);
 					}, duration);
 					counter++;
 					answer.text = counter;
-
 					stage.update();
 				});
 
+				function recreateCircles(tCircle) {
+						var x = tCircle.x;
+						var y = tCircle.y;
+						var colors = ['#FFF361', '#4A90E2', '#CA8EFF', '#FF596D', '#B8E986', '#FFAC8D'];
+						var randomNum = Math.floor(Math.random() * colors.length);
+						circle = new createjs.Shape();
+						circle.graphics.f(colors[randomNum]).dc(x, y, radius);
+						circles.addChild(circle);
+					stage.update();
+				}
+
 				stage.update();
+			}
+			function restartApp(){
+				stage.removeAllChildren();
+				init();
 			}
 
 			resize = function() {

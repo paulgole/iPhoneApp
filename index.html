@@ -106,12 +106,13 @@
 						circle = new createjs.Shape();
 						circle.setBounds(-radius, -radius, radius * 2, radius * 2);
 						zim.expand(circle, 25, 25);
-
 						circle.graphics.f(colors[randomNum]).dc(0, 0, radius);
 						circles.addChild(circle);
 						circle.x = (size + spacing) * (i % cols);
 						circle.y = (size + spacing) * Math.floor(i / cols);
+						circle.cache(-radius, -radius, radius * 2, radius * 2);
 						stage.update();
+
 					}
 				}
 

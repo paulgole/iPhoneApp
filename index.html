@@ -36,7 +36,6 @@
 
 			makeCanvas();
 
-
 			var stage = new createjs.Stage("myCanvas");
 			//stage.enableMouseOver(10); // leave out if mobile
 			createjs.Touch.enable(stage, true);
@@ -80,6 +79,11 @@
 
 				createCircles();
 
+				var colors = ['#FFF361', '#4A90E2', '#CA8EFF', '#FF596D', '#B8E986', '#FFAC8D'];
+				var randomNum = Math.floor(Math.random() * colors.length);
+
+				/////////////  Create Dots  /////////////////
+
 				function createCircles() {
 
 					for (var i = 0; i < total; i++) {
@@ -94,22 +98,28 @@
 					}
 				}
 
-				/////////////  TRAY  /////////////////
-				var tray = new createjs.Container();
+				/////////////  Timer  /////////////////
 
-				tray.height = stageH*.15;
+				var timeCounter = 5;
+				var timeCount = setInterval(function () {
+					timeCounter--;
+					timer.text = timeCounter;
+					if(timeCounter == 0){
+						clearInterval(timeCount);
+					}
+					stage.update();
+				}, 1000);
 
-				stage.addChild(tray);
+				/////////////  Game TRAY  /////////////////
 
+				var gameTray = new createjs.Container();
+				gameTray.height = stageH * .15;
+				stage.addChild(gameTray);
 				var trayBacking = new createjs.Shape();
-
-				trayBacking.graphics.dr(3*stageW/4,0,stageW,tray.height);
-
-				tray.addChild(trayBacking);
-
-				var score = new createjs.Text("Score: ", size*.6 + "px arial", "#e2e2e2");
-
-				var answer = new createjs.Text( counter, size*.8 + "px arial", "#878787");
+				trayBacking.graphics.dr(3 * stageW / 4, 0, stageW, gameTray.height);
+				gameTray.addChild(trayBacking);
+				var score = new createjs.Text("Score: ", size * .6 + "px arial", "#e2e2e2");
+				var answer = new createjs.Text(counter, size * .8 + "px arial", "#878787");
 
 				answer.textAlign = "center";
 				answer.textBaseline = "middle";
@@ -117,19 +127,17 @@
 				score.textAlign = "center";
 				score.textBaseline = "middle";
 
-				tray.addChild(answer);
+				gameTray.addChild(answer);
+				gameTray.addChild(score);
 
-				tray.addChild(score);
+				answer.x = 7 * stageW / 8;
+				answer.y = gameTray.height / 2;
 
-				answer.x = 7*stageW/8;
-				answer.y = tray.height/2;
+				score.x = answer.x - stageW / 10;
+				score.y = gameTray.height / 2;
 
-				score.x = answer.x - stageW/10;
-				score.y = tray.height/2;
-
-				var time = new createjs.Text("Time: ", size*.6 + "px arial", "#e2e2e2");
-
-				var timer = new createjs.Text(counter, size*.8 + "px arial", "#878787");
+				var time = new createjs.Text("Time: ", size * .6 + "px arial", "#e2e2e2");
+				var timer = new createjs.Text(timeCounter, size * .8 + "px arial", "#878787");
 
 				timer.textAlign = "center";
 				timer.textBaseline = "middle";
@@ -137,18 +145,37 @@
 				time.textAlign = "center";
 				time.textBaseline = "middle";
 
-				tray.addChild(time);
+				gameTray.addChild(time);
+				gameTray.addChild(timer);
 
-				tray.addChild(timer);
+				timer.x = stageW / 4 + 50;
+				timer.y = gameTray.height / 2;
 
-				timer.x = stageW/4 + 50;
-				timer.y = tray.height/2;
+				time.x = timer.x - stageW / 10;
+				time.y = gameTray.height / 2;
 
-				time.x = timer.x - stageW/10;
-				time.y = tray.height/2;
+				gameTray.y = 1;
 
+				/////////////  Color TRAY  /////////////////
 
-				tray.y = 1;
+				var colorTray = new createjs.Container();
+				colorTray.height = stageH * .15;
+				stage.addChild(colorTray);
+
+				var colorTrayBacking = new createjs.Shape();
+				colorTrayBacking.graphics.dr(0, 0, stageW, colorTray.height);
+				colorTray.addChild(colorTrayBacking);
+
+				var colorText = new createjs.Text("Colour", "bold " + size * .9 + "px Verdana", colors[randomNum]);
+				colorText.textAlign = "center";
+				colorText.textBaseline = "middle";
+				colorTray.addChild(colorText);
+				colorText.x = stageW / 2;
+				colorText.y = colorTray.height / 2;
+
+				colorTray.y = stageH * .7;
+
+				/////////////  MouseDown Event Listener  /////////////////
 
 				circles.on('mousedown', function(e) {
 					var duration = 250;
@@ -165,8 +192,13 @@
 					}, duration);
 					counter++;
 					answer.text = counter;
+
 					stage.update();
 				});
+
+
+
+				/////////////  Shuffle  /////////////////
 
 				//this can be placed into your module- or should be
 				function shuffle(array) {

@@ -36,7 +36,7 @@
 			var resize;
 			var orientation;
 
-			//makeCanvas();
+			// makeCanvas();
 			var canvas = document.getElementById('myCanvas');
 			canvas.setAttribute('width', window.innerWidth);
 			canvas.setAttribute('height', window.innerHeight);
@@ -48,7 +48,7 @@
 
 
 			// var stage = new createjs.Stage("myCanvas");
-			//stage.enableMouseOver(10); // leave out if mobile
+			// stage.enableMouseOver(10); // leave out if mobile
 			// createjs.Touch.enable(stage, true);
 
 			var queue = new createjs.LoadQueue(false);
@@ -60,14 +60,16 @@
 
 			queue.on('complete', function() {
 				// var title = new createjs.Bitmap(queue.getResult('title'));
-				// console.log(title.getBounds().width);
 				// var titleSize = title.getBounds(title.scaleX = title.scaleY = stageW / stageH * 3).width;
 				// stage.addChild(title);
-				// title.x = (stageW / 2) - (titleSize / 2);
-				// title.y = stageH / 15;
-				// title.alpha = 0.8;
+				// title.x = 100;
+				// title.y = 100;
 				init();
 			});
+
+			function startScreen(){
+				console.log('test');
+			}
 
 			sizeStage();
 
@@ -102,6 +104,9 @@
 						var colors = ['#FFF361', '#4A90E2', '#CA8EFF', '#FF596D', '#B8E986', '#FFAC8D'];
 						var randomNum = Math.floor(Math.random() * colors.length);
 						circle = new createjs.Shape();
+						circle.setBounds(-radius, -radius, radius * 2, radius * 2);
+						zim.expand(circle, 25, 25);
+
 						circle.graphics.f(colors[randomNum]).dc(0, 0, radius);
 						circles.addChild(circle);
 						circle.x = (size + spacing) * (i % cols);
@@ -207,7 +212,7 @@
 					colorTray.y = circle.y + stageH / 2 - stageH / 5.5;
 				}
 
-				var refresh = new createjs.Text('Refresh',"bold " + size * .9 + "px arial", "#a7a7a7");
+				var refresh = new createjs.Text('Next',"bold " + size * 1.2 + "px arial", "#a7a7a7");
 
 				refresh.textAlign = "center";
 				refresh.textBaseline = "middle";
@@ -236,11 +241,11 @@
 							scaleX: 2,
 							scaleY: 2,
 							alpha: 0
-						}, duration, createjs.Ease.sineInOut);
-						setTimeout(function() {
+						}, duration, createjs.Ease.sineInOut).call(function(){
+							createjs.Ticker.off("tick", ticker);
 							circles.removeChild(thisCircle);
 							recreateCircles(thisCircle);
-						}, duration + 100);
+						});
 						counter++;
 						answer.text = counter;
 					}else{

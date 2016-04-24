@@ -59,269 +59,301 @@
 			}]);
 
 			queue.on('complete', function() {
-				// var title = new createjs.Bitmap(queue.getResult('title'));
-				// var titleSize = title.getBounds(title.scaleX = title.scaleY = stageW / stageH * 3).width;
-				// stage.addChild(title);
-				// title.x = 100;
-				// title.y = 100;
 				init();
 			});
-
-			function startScreen(){
-				console.log('test');
-			}
 
 			sizeStage();
 
 			function init() {
-				var row = 7;
-				var radius = stageW / 30;
-				var size = radius * 2;
-				var spacing = stageH * .04;
-				var counter = 0;
+				startScreen();
+				function startScreen() {
+					var startPage = new createjs.Container();
+					startPage.x = startPage.y = 0;
+					stage.addChild(startPage);
+					var size = stageW / 30 * 2;
+					var startText = new createjs.Text('Start', "bold " + size * 1.6 + "px arial", "#FF596D");
+					var instructionText = new createjs.Text('Pop all the dots within 30 seconds.', "bold " + size * 0.8 + "px arial", "#b4b4b4");
 
-				var cols = 6;
-				var rows = 6;
+					startText.textAlign = "center";
+					startText.textBaseline = "middle";
 
-				var total = cols * rows;
+					instructionText.textAlign = "center";
+					instructionText.textBaseline = "middle";
 
-				circles = new createjs.Container();
-				stage.addChild(circles);
-				circles.y = stageH / 4;
-				circles.x = stageW / 6;
+					startText.x = stageW/2;
+					startText.y = stageH*0.7;
+
+					instructionText.x = stageW/2;
+					instructionText.y = stageH*0.54;
+
+					zim.expand(startText, 50, 50);
+
+					startPage.addChild(startText);
+					startPage.addChild(instructionText);
+
+					var title = new createjs.Bitmap(queue.getResult('title'));
+					var titleSize = title.getBounds(title.scaleX = title.scaleY = stageW / stageH * 3).width;
+					startPage.addChild(title);
+					title.x = stageW/2 - titleSize/2/0.6;
+					title.y = stageH*0.4;
+
+					stage.update();
+
+					startText.on('mousedown', function() {
+						stage.removeAllChildren(startPage);
+						app();
+					});
+				}
+				function app() {
+					var row = 7;
+					var radius = stageW / 30;
+					var size = radius * 2;
+					var spacing = stageH * .04;
+					var counter = 0;
+
+					var cols = 6;
+					var rows = 6;
+
+					var total = cols * rows;
+
+					circles = new createjs.Container();
+					stage.addChild(circles);
+					circles.y = stageH / 4;
+					circles.x = stageW / 6;
 
 
-				var colors = ['#FFF361', '#4A90E2', '#CA8EFF', '#FF596D', '#B8E986', '#FFAC8D'];
-				var randomNum = Math.floor(Math.random() * colors.length);
+					var colors = ['#FFF361', '#4A90E2', '#CA8EFF', '#FF596D', '#B8E986', '#FFAC8D'];
+					var randomNum = Math.floor(Math.random() * colors.length);
 
-				createCircles();
-				colorSection(colors, randomNum);
+					createCircles();
+					colorSection(colors, randomNum);
 
-				/////////////  Create Dots  /////////////////
+					/////////////  Create Dots  /////////////////
 
-				function createCircles() {
-					for (var i = 0; i < total; i++) {
+					function createCircles() {
+						for (var i = 0; i < total; i++) {
+							var colors = ['#FFF361', '#4A90E2', '#CA8EFF', '#FF596D', '#B8E986', '#FFAC8D'];
+							var randomNum = Math.floor(Math.random() * colors.length);
+							circle = new createjs.Shape();
+							circle.setBounds(-radius, -radius, radius * 2, radius * 2);
+							zim.expand(circle, 25, 25);
+							circle.graphics.f(colors[randomNum]).dc(0, 0, radius);
+							circles.addChild(circle);
+							circle.x = (size + spacing) * (i % cols);
+							circle.y = (size + spacing) * Math.floor(i / cols);
+							circle.cache(-radius, -radius, radius * 2, radius * 2);
+							stage.update();
+						}
+					}
+
+					/////////////  Timer  /////////////////
+
+					var timeCounter = 30;
+					var timeCount = setInterval(function() {
+						timeCounter--;
+						timer.text = timeCounter;
+						if (timeCounter == 0) {
+							clearInterval(timeCount);
+							finished(counter);
+						}
+						stage.update();
+					}, 1000);
+
+					/////////////  Game TRAY  /////////////////
+
+					var gameTray = new createjs.Container();
+					gameTray.height = stageH * .15;
+					stage.addChild(gameTray);
+					var trayBacking = new createjs.Shape();
+					trayBacking.graphics.dr(3 * stageW / 4, 0, stageW, gameTray.height);
+					gameTray.addChild(trayBacking);
+					var score = new createjs.Text("Score: ", size * .6 + "px arial", "#878787");
+					var answer = new createjs.Text(counter, size * .8 + "px arial", "#494949");
+
+					answer.textAlign = "center";
+					answer.textBaseline = "middle";
+
+					score.textAlign = "center";
+					score.textBaseline = "middle";
+
+					gameTray.addChild(answer);
+					gameTray.addChild(score);
+
+					answer.x = 7 * stageW / 8;
+					answer.y = gameTray.height / 2 + stageH / 12;
+
+					score.x = answer.x - stageW / 10;
+					score.y = gameTray.height / 2 + stageH / 12;
+
+					var time = new createjs.Text("Time: ", size * .6 + "px arial", "#878787");
+					var timer = new createjs.Text(timeCounter, size * .8 + "px arial", "#494949");
+
+					timer.textAlign = "center";
+					timer.textBaseline = "middle";
+
+					time.textAlign = "center";
+					time.textBaseline = "middle";
+
+					gameTray.addChild(time);
+					gameTray.addChild(timer);
+
+					timer.x = 7 * stageW / 25;
+					timer.y = gameTray.height / 2 + stageH / 12;
+
+					time.x = timer.x - stageW / 10;
+					time.y = gameTray.height / 2 + stageH / 12;
+
+					gameTray.y = 1;
+
+					/////////////  Color TRAY  /////////////////
+					function colorSection(colors, randomNum) {
+
+						var colorTray = new createjs.Container();
+						colorTray.height = stageH * .15;
+						stage.addChild(colorTray);
+
+						var colorTrayBacking = new createjs.Shape();
+						colorTrayBacking.graphics.dr(0, 0, stageW, colorTray.height);
+						colorTray.addChild(colorTrayBacking);
+
+						if (colors[randomNum] == "#FFF361") {
+							var colorText = new createjs.Text("Yellow", "bold " + size * 2 + "px Verdana", "#FFF361");
+						}
+						if (colors[randomNum] == "#4A90E2") {
+							var colorText = new createjs.Text("Blue", "bold " + size * 2 + "px Verdana", "#4A90E2");
+						}
+						if (colors[randomNum] == "#CA8EFF") {
+							var colorText = new createjs.Text("Purple", "bold " + size * 2 + "px Verdana", "#CA8EFF");
+						}
+						if (colors[randomNum] == "#FF596D") {
+							var colorText = new createjs.Text("Red", "bold " + size * 2 + "px Verdana", "#FF596D");
+						}
+						if (colors[randomNum] == "#B8E986") {
+							var colorText = new createjs.Text("Green", "bold " + size * 2 + "px Verdana", "#B8E986");
+						}
+						if (colors[randomNum] == "#FFAC8D") {
+							var colorText = new createjs.Text("Peach", "bold " + size * 2 + "px Verdana", "#FFAC8D");
+						}
+						colorText.textAlign = "center";
+						colorText.textBaseline = "middle";
+						colorTray.addChild(colorText);
+						colorText.x = stageW / 2;
+						colorText.y = colorTray.height / 2;
+						colorTray.y = circle.y + stageH / 2 - stageH / 5.5;
+					}
+					var refresh = new createjs.Text('Next', "bold " + size * 1.2 + "px arial", "#a7a7a7");
+
+					refresh.textAlign = "center";
+					refresh.textBaseline = "middle";
+
+					refresh.x = stageW / 2;
+					refresh.y = stageH - stageH / 10;
+					zim.expand(refresh, 50, 50);
+
+					stage.addChild(refresh);
+
+					refresh.on('mousedown', function() {
+						circles.removeAllChildren();
+						createCircles();
+						stage.update();
+					});
+
+
+					/////////////  MouseDown Event Listener  /////////////////
+					circles.on('mousedown', function(e) {
+						var duration = 350;
+						var thisCircle = e.target;
+						var origdist = thisCircle.x;
+						console.log(thisCircle);
+						var ticker = createjs.Ticker.on("tick", stage);
+						if (e.target.graphics._fill.style == colors[randomNum]) {
+							createjs.Tween.get(thisCircle).to({
+								scaleX: 2,
+								scaleY: 2,
+								alpha: 0
+							}, duration, createjs.Ease.sineInOut).call(function() {
+								createjs.Ticker.off("tick", ticker);
+								circles.removeChild(thisCircle);
+								recreateCircles(thisCircle);
+							});
+							counter++;
+							answer.text = counter;
+						} else {
+							createjs.Tween.get(thisCircle).to({
+									x: thisCircle.x + 30
+								}, 150, createjs.Ease.sineInOut).to({
+									x: thisCircle.x - 60
+								}, 150, createjs.Ease.sineInOut)
+								.to({
+									x: origdist
+								}, 150, createjs.Ease.sineInOut);
+						}
+
+						stage.update();
+					});
+
+
+					function recreateCircles(tCircle) {
+						var x = tCircle.x;
+						var y = tCircle.y;
 						var colors = ['#FFF361', '#4A90E2', '#CA8EFF', '#FF596D', '#B8E986', '#FFAC8D'];
 						var randomNum = Math.floor(Math.random() * colors.length);
 						circle = new createjs.Shape();
-						circle.setBounds(-radius, -radius, radius * 2, radius * 2);
-						zim.expand(circle, 25, 25);
-						circle.graphics.f(colors[randomNum]).dc(0, 0, radius);
+						circle.graphics.f(colors[randomNum]).dc(x, y, radius);
 						circles.addChild(circle);
-						circle.x = (size + spacing) * (i % cols);
-						circle.y = (size + spacing) * Math.floor(i / cols);
-						circle.cache(-radius, -radius, radius * 2, radius * 2);
+						stage.update();
+					}
+
+					function finished(counter) {
+						console.log(counter);
+						var finishBG = new createjs.Shape();
+						finishBG.graphics.f('white').dr(0, 0, stageW, stageH);
+						stage.addChild(finishBG);
+						finishBG.x = finishBG.y = 0;
+
+						var scoreText = new createjs.Text("Your score is: ", "bold " + size * .9 + "px arial", "#a7a7a7");
+
+						scoreText.textAlign = "center";
+						scoreText.textBaseline = "middle";
+
+						scoreText.x = stageW / 2;
+						scoreText.y = stageH / 4;
+
+						stage.addChild(scoreText);
+
+						var finalScore = new createjs.Text(counter, "bold " + size * 10 + "px arial", colors[randomNum]);
+
+						finalScore.textAlign = "center";
+						finalScore.textBaseline = "middle";
+
+						finalScore.x = stageW / 2;
+						finalScore.y = stageH / 2;
+
+						stage.addChild(finalScore);
+
+						var retry = new createjs.Text("Retry", "bold " + size * 2 + "px arial", colors[randomNum]);
+
+						retry.textAlign = "center";
+						retry.textBaseline = "middle";
+
+						retry.x = stageW / 2;
+						retry.y = stageH - stageH / 5;
+
+						zim.expand(retry, 50, 50);
+
+						stage.addChild(retry);
+
+						retry.on('mousedown', function() {
+							stage.removeAllChildren();
+							app();
+						});
+
 						stage.update();
 
 					}
-				}
 
-				/////////////  Timer  /////////////////
-
-				var timeCounter = 30;
-				var timeCount = setInterval(function() {
-					timeCounter--;
-					timer.text = timeCounter;
-					if (timeCounter == 0) {
-						clearInterval(timeCount);
-						finished(counter);
-					}
-					stage.update();
-				}, 1000);
-
-				/////////////  Game TRAY  /////////////////
-
-				var gameTray = new createjs.Container();
-				gameTray.height = stageH * .15;
-				stage.addChild(gameTray);
-				var trayBacking = new createjs.Shape();
-				trayBacking.graphics.dr(3 * stageW / 4, 0, stageW, gameTray.height);
-				gameTray.addChild(trayBacking);
-				var score = new createjs.Text("Score: ", size * .6 + "px arial", "#878787");
-				var answer = new createjs.Text(counter, size * .8 + "px arial", "#494949");
-
-				answer.textAlign = "center";
-				answer.textBaseline = "middle";
-
-				score.textAlign = "center";
-				score.textBaseline = "middle";
-
-				gameTray.addChild(answer);
-				gameTray.addChild(score);
-
-				answer.x = 7 * stageW / 8;
-				answer.y = gameTray.height / 2 + stageH / 12;
-
-				score.x = answer.x - stageW / 10;
-				score.y = gameTray.height / 2 + stageH / 12;
-
-				var time = new createjs.Text("Time: ", size * .6 + "px arial", "#878787");
-				var timer = new createjs.Text(timeCounter, size * .8 + "px arial", "#494949");
-
-				timer.textAlign = "center";
-				timer.textBaseline = "middle";
-
-				time.textAlign = "center";
-				time.textBaseline = "middle";
-
-				gameTray.addChild(time);
-				gameTray.addChild(timer);
-
-				timer.x = 7 * stageW / 25;
-				timer.y = gameTray.height / 2 + stageH / 12;
-
-				time.x = timer.x - stageW / 10;
-				time.y = gameTray.height / 2 + stageH / 12;
-
-				gameTray.y = 1;
-
-				/////////////  Color TRAY  /////////////////
-				function colorSection(colors, randomNum) {
-
-					var colorTray = new createjs.Container();
-					colorTray.height = stageH * .15;
-					stage.addChild(colorTray);
-
-					var colorTrayBacking = new createjs.Shape();
-					colorTrayBacking.graphics.dr(0, 0, stageW, colorTray.height);
-					colorTray.addChild(colorTrayBacking);
-
-					if (colors[randomNum] == "#FFF361") {
-						var colorText = new createjs.Text("Yellow", "bold " + size * 2 + "px Verdana", "#FFF361");
-					}
-					if (colors[randomNum] == "#4A90E2") {
-						var colorText = new createjs.Text("Blue", "bold " + size * 2 + "px Verdana", "#4A90E2");
-					}
-					if (colors[randomNum] == "#CA8EFF") {
-						var colorText = new createjs.Text("Purple", "bold " + size * 2 + "px Verdana", "#CA8EFF");
-					}
-					if (colors[randomNum] == "#FF596D") {
-						var colorText = new createjs.Text("Red", "bold " + size * 2 + "px Verdana", "#FF596D");
-					}
-					if (colors[randomNum] == "#B8E986") {
-						var colorText = new createjs.Text("Green", "bold " + size * 2 + "px Verdana", "#B8E986");
-					}
-					if (colors[randomNum] == "#FFAC8D") {
-						var colorText = new createjs.Text("Peach", "bold " + size * 2 + "px Verdana", "#FFAC8D");
-					}
-
-					colorText.textAlign = "center";
-					colorText.textBaseline = "middle";
-					colorTray.addChild(colorText);
-					colorText.x = stageW / 2;
-					colorText.y = colorTray.height / 2;
-					colorTray.y = circle.y + stageH / 2 - stageH / 5.5;
-				}
-
-				var refresh = new createjs.Text('Next',"bold " + size * 1.2 + "px arial", "#a7a7a7");
-
-				refresh.textAlign = "center";
-				refresh.textBaseline = "middle";
-
-				refresh.x = stageW / 2;
-				refresh.y = stageH - stageH / 10;
-
-				stage.addChild(refresh);
-
-				refresh.on('mousedown', function() {
-					circles.removeAllChildren();
-					createCircles();
-					stage.update();
-				});
-
-
-				/////////////  MouseDown Event Listener  /////////////////
-				circles.on('mousedown', function(e) {
-					var duration = 350;
-					var thisCircle = e.target;
-					var origdist = thisCircle.x;
-					console.log(thisCircle);
-					var ticker = createjs.Ticker.on("tick", stage);
-					if (e.target.graphics._fill.style == colors[randomNum]) {
-						createjs.Tween.get(thisCircle).to({
-							scaleX: 2,
-							scaleY: 2,
-							alpha: 0
-						}, duration, createjs.Ease.sineInOut).call(function(){
-							createjs.Ticker.off("tick", ticker);
-							circles.removeChild(thisCircle);
-							recreateCircles(thisCircle);
-						});
-						counter++;
-						answer.text = counter;
-					}else{
-						createjs.Tween.get(thisCircle).to({
-							x: thisCircle.x + 30
-						}, 150, createjs.Ease.sineInOut).to({
-							 x: thisCircle.x - 60
-						 }, 150,  createjs.Ease.sineInOut)
-						 .to({
- 							 x: origdist
- 						 }, 150,  createjs.Ease.sineInOut);
-					}
-
-					stage.update();
-				});
-
-
-				function recreateCircles(tCircle) {
-					var x = tCircle.x;
-					var y = tCircle.y;
-					var colors = ['#FFF361', '#4A90E2', '#CA8EFF', '#FF596D', '#B8E986', '#FFAC8D'];
-					var randomNum = Math.floor(Math.random() * colors.length);
-					circle = new createjs.Shape();
-					circle.graphics.f(colors[randomNum]).dc(x, y, radius);
-					circles.addChild(circle);
 					stage.update();
 				}
-
-				function finished(counter){
-					console.log(counter);
-					var finishBG = new createjs.Shape();
-					finishBG.graphics.f('white').dr(0, 0, stageW, stageH);
-					stage.addChild(finishBG);
-					finishBG.x = finishBG.y = 0;
-
-					var scoreText = new createjs.Text("Your score is: " ,"bold " + size * .9 + "px arial", "#a7a7a7");
-
-					scoreText.textAlign = "center";
-					scoreText.textBaseline = "middle";
-
-					scoreText.x = stageW / 2;
-					scoreText.y = stageH / 4;
-
-					stage.addChild(scoreText);
-
-					var finalScore = new createjs.Text(counter ,"bold " + size * 10 + "px arial", colors[randomNum]);
-
-					finalScore.textAlign = "center";
-					finalScore.textBaseline = "middle";
-
-					finalScore.x = stageW / 2;
-					finalScore.y = stageH / 2;
-
-					stage.addChild(finalScore);
-
-					var retry = new createjs.Text("Retry" ,"bold " + size * 2 + "px arial", colors[randomNum]);
-
-					retry.textAlign = "center";
-					retry.textBaseline = "middle";
-
-					retry.x = stageW / 2;
-					retry.y = stageH - stageH / 5;
-
-					stage.addChild(retry);
-
-					retry.on('mousedown', function(){
-						stage.removeAllChildren();
-						init();
-					});
-
-					stage.update();
-
-				}
-
-				stage.update();
 			}
 
 			resize = function() {

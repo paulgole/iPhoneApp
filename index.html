@@ -66,14 +66,25 @@
 
 			function init() {
 				startScreen();
+
 				function startScreen() {
 					var startPage = new createjs.Container();
 					startPage.x = startPage.y = 0;
 					stage.addChild(startPage);
 					var size = stageW / 30 * 2;
+
+					var popO = new createjs.Shape();
+					popO.graphics.f("#FF596D").dc(0, 0, 100);
+					popO.x = stageW / 2;
+					popO.y = stageH * 0.4;
+
+					var titleText = new createjs.Text('POP', "bold " + size * 4 + "px arial", "#b4b4b4");
 					var startText = new createjs.Text('Start', "bold " + size * 1.6 + "px arial", "#FF596D");
 					var instructionText = new createjs.Text('Pop the correct dots', "bold " + size * 0.8 + "px arial", "#b4b4b4");
 					var instructionText2 = new createjs.Text('within 30 seconds.', "bold " + size * 0.8 + "px arial", "#b4b4b4");
+
+					titleText.textAlign = "center";
+					titleText.textBaseline = "middle";
 
 					startText.textAlign = "center";
 					startText.textBaseline = "middle";
@@ -84,28 +95,25 @@
 					instructionText2.textAlign = "center";
 					instructionText2.textBaseline = "middle";
 
-					startText.x = stageW/2;
-					startText.y = stageH*0.7;
+					titleText.x = stageW / 2;
+					titleText.y = stageH * 0.4;
 
-					instructionText.x = stageW/2;
-					instructionText.y = stageH*0.54;
+					startText.x = stageW / 2;
+					startText.y = stageH * 0.7;
 
-					instructionText2.x = stageW/2;
-					instructionText2.y = stageH*0.58;
+					instructionText.x = stageW / 2;
+					instructionText.y = stageH * 0.54;
+
+					instructionText2.x = stageW / 2;
+					instructionText2.y = stageH * 0.58;
 
 					zim.expand(startText, 50, 50);
 
+					startPage.addChild(titleText);
 					startPage.addChild(startText);
 					startPage.addChild(instructionText);
 					startPage.addChild(instructionText2);
-
-					var title = new createjs.Bitmap(queue.getResult('title'));
-					var titleSize = title.getBounds(title.scaleX = title.scaleY = stageW / stageH * 3).width;
-					startPage.addChild(title);
-					title.x = stageW/2 - titleSize/2/0.6;
-					title.y = stageH*0.38;
-					title.scaleX = 2;
-					title.scaleY = 2;
+					startPage.addChild(popO);
 
 					stage.update();
 
@@ -114,6 +122,7 @@
 						app();
 					});
 				}
+
 				function app() {
 					var row = 7;
 					var radius = stageW / 30;
